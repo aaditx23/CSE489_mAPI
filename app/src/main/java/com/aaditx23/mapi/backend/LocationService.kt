@@ -8,6 +8,7 @@ import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -32,6 +33,7 @@ interface LocationService {
     @DELETE("api.php/{id}")
     fun deleteLocation(@Path("id") id: Int): Call<Void>
 
+    @FormUrlEncoded
     @Multipart
     @PUT("api.php")
     fun updateLocation(
@@ -42,7 +44,7 @@ interface LocationService {
         @Part image: MultipartBody.Part
     ): Call<Location>
 
-    @GET("images/{name}.jpg")
-    fun getImage(@Path("name") name:String ): Call<ResponseBody>
+    @GET("{path}")
+    fun getImage(@Path("path") name:String ): Call<Location>
 
 }

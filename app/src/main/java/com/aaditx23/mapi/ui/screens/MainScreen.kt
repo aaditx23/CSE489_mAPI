@@ -31,7 +31,7 @@ fun Main(file: File) {
     val location = LocationVM()
     val bottomNav = bottomNavItemList
     var selectedIndex by rememberSaveable {
-        mutableIntStateOf(0)
+        mutableIntStateOf(1)
     }
     val navController = rememberNavController()
 

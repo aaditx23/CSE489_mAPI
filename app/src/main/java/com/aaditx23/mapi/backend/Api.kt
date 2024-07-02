@@ -7,7 +7,7 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 
 object Api {
 
-    private const val URL = "https://labs.anontech.info/cse489/t3/"
+    const val URL = "https://labs.anontech.info/cse489/t3/"
 
     private val moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())

@@ -62,7 +62,9 @@ class LocationVM: ViewModel() {
 
 
     private fun findLocation(id: Int): Location{
+        println("${ _allLocations.value.size } PRINTED")
         if (id < _allLocations.value.size) {
+            print("FOund")
             return _allLocations.value[id - 1]
         }
         return Location()
@@ -160,20 +162,6 @@ class LocationVM: ViewModel() {
 
 
 
-    }
-
-    fun getImage(name: String){
-        val response = api.getImage(name)
-        response.enqueue(object : Callback<ResponseBody>{
-            override fun onResponse(p0: Call<ResponseBody>, p1: Response<ResponseBody>) {
-                TODO("Not yet implemented")
-            }
-
-            override fun onFailure(p0: Call<ResponseBody>, p1: Throwable) {
-                TODO("Not yet implemented")
-            }
-
-        })
     }
 
 }
