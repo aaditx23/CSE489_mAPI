@@ -1,49 +1,64 @@
 package com.aaditx23.mapi.ui.screens
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.aaditx23.mapi.backend.Location
 import com.aaditx23.mapi.backend.LocationVM
+import com.aaditx23.mapi.components.BottomNavigation
+import com.aaditx23.mapi.models.BottomNavItem
+import com.aaditx23.mapi.models.BottomNavItem.Companion.bottomNavItemList
 import org.json.JSONObject
 import java.io.File
 
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun Main(file: File) {
-    val context = LocalContext.current
+//fun Main(){
     val location = LocationVM()
-    val locationData = location.allLocations.value
-    file.createNewFile()
-    file.outputStream().use {
-        context.assets.open("im.jpg").copyTo(it)
+    val bottomNav = bottomNavItemList
+    var selectedIndex by rememberSaveable {
+        mutableIntStateOf(0)
     }
-    val locationJSON = JSONObject()
-    locationJSON.put("title", "Demo 4 - 23341077")
-    locationJSON.put("lat", 23.6850)
-    locationJSON.put("lon", 90.3563)
-    locationJSON.put("image", file)
+    val navController = rememberNavController()
 
 
-
-
-
-    Column(
-
-    ) {
-        locationData.forEachIndexed { _, location ->
-            Text(text = location.title.toString())
+    Scaffold(
+        bottomBar = {
+            BottomNavigation(selectedIndex = selectedIndex) {index ->
+                selectedIndex = index
+                navController.navigate(bottomNav[index].title)
+            }
         }
-        location.updateLocation(
-            location = Location(
-                id = 61,
-                title = "Demo 6 update - 23341077",
-                lon = 90.3563,
-                lat = 23.6850
-            ),
-            image = file
-        )
+    ) {
+
+        NavHost(navController = navController, startDestination = "Add Location"){
+            composable("Map"){
+                Map()
+            }
+            composable("Add Location"){
+                Add(file)
+            }
+            composable("Edit Location"){
+                Edit(file)
+            }
+            composable("Get Locations"){
+                Get()
+            }
+        }
     }
 
 

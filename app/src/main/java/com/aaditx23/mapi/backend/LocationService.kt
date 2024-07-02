@@ -3,6 +3,7 @@ package com.aaditx23.mapi.backend
 
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.http.Body
@@ -40,5 +41,8 @@ interface LocationService {
         @Part("lon") lon: RequestBody,
         @Part image: MultipartBody.Part
     ): Call<Location>
+
+    @GET("images/{name}.jpg")
+    fun getImage(@Path("name") name:String ): Call<ResponseBody>
 
 }

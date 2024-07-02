@@ -7,4 +7,6 @@ data class Location(
     val title:String? = null,
     val lat: Double? = null,
     val lon: Double? = null,
+    val image: String? = null,
+    val status:String? = null
 )

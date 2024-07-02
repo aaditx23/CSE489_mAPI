@@ -6,24 +6,32 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.ResponseBody
 import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 
-class LocationVM {
+class LocationVM: ViewModel() {
 
     @SuppressLint("MutableCollectionMutableState")
     private val _allLocations = mutableStateOf(listOf<Location>())
+    private val _locationResponse = MutableStateFlow<Location?>(null)
+    val locationResponse: StateFlow<Location?>
+    @Composable    get() = remember{_locationResponse}
     private val api = Api.retrofitService
-    var locationResponse = mutableStateOf(Location())
+
+
     val allLocations: State<List<Location>>
         @Composable get() = remember {
             _allLocations
@@ -52,10 +60,10 @@ class LocationVM {
         })
     }
 
-    @Composable
+
     private fun findLocation(id: Int): Location{
-        if (id < allLocations.value.size) {
-            return allLocations.value[id - 1]
+        if (id < _allLocations.value.size) {
+            return _allLocations.value[id - 1]
         }
         return Location()
     }
@@ -80,7 +88,7 @@ class LocationVM {
             override fun onResponse(call: Call<Location>, response: Response<Location>) {
                 if (response.isSuccessful){
                     println("POST SUCCESSFUL! ${response.body()!!}")
-                    locationResponse = mutableStateOf(response.body()!!)
+                    _locationResponse.value = response.body()
                 }
                 else{
                     println("Post Not successful ${response.errorBody()}")
@@ -116,15 +124,16 @@ class LocationVM {
     }
 
     fun updateLocation(location: Location, image: File){
+        val oldLocation = findLocation(id = location.id!!)
 
-        val titlePart = location.title?.toRequestBody("text/plain".toMediaTypeOrNull())
-        val latPart = location.lat?.toString()?.toRequestBody("text/plain".toMediaTypeOrNull())
-        val lonPart = location.lon?.toString()?.toRequestBody("text/plain".toMediaTypeOrNull())
+        val titlePart = (location.title ?: oldLocation.title)!!.toRequestBody("text/plain".toMediaTypeOrNull())
+        val latPart = (location.lat?: oldLocation.lat).toString().toRequestBody("text/plain".toMediaTypeOrNull())
+        val lonPart = (location.lon?: oldLocation.lat).toString().toRequestBody("text/plain".toMediaTypeOrNull())
         val response = api.updateLocation(
-            id = location.id!!,
-            title = titlePart!!,
-            lat = latPart!!,
-            lon = lonPart!!,
+            id = location.id,
+            title = titlePart,
+            lat = latPart,
+            lon = lonPart,
             image = MultipartBody.Part
                 .createFormData(
                     "image",
@@ -136,6 +145,7 @@ class LocationVM {
             override fun onResponse(call: Call<Location>, response: Response<Location>) {
                 if (response.isSuccessful){
                     println("PATCH SUCCESSFUL! ${response.body()}")
+                    _locationResponse.value = response.body()
                 }
                 else{
                     println("patch Not successful ${response.errorBody()}")
@@ -150,6 +160,20 @@ class LocationVM {
 
 
 
+    }
+
+    fun getImage(name: String){
+        val response = api.getImage(name)
+        response.enqueue(object : Callback<ResponseBody>{
+            override fun onResponse(p0: Call<ResponseBody>, p1: Response<ResponseBody>) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onFailure(p0: Call<ResponseBody>, p1: Throwable) {
+                TODO("Not yet implemented")
+            }
+
+        })
     }
 
 }
