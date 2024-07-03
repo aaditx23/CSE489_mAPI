@@ -63,8 +63,8 @@ class LocationVM: ViewModel() {
 
      fun findLocation(id: Int): Location?{
 
-        if (id < _allLocations.value.size && id >0) {
-            print("FOund")
+        if (id <= _allLocations.value.size && id >= 0) {
+            print("Found")
             return _allLocations.value[id - 1]
         }
         return null

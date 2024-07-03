@@ -29,9 +29,8 @@ import java.io.File
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun Main(file: File) {
-//fun Main(){
-    val location = LocationVM()
+fun Main() {
+
     val bottomNav = bottomNavItemList
     var selectedIndex by rememberSaveable {
         mutableIntStateOf(0)
@@ -51,17 +50,17 @@ fun Main(file: File) {
         }
     ) {
 
-        NavHost(navController = navController, startDestination = "Add Location"){
+        NavHost(navController = navController, startDestination = "Map"){
             composable("Map"){
                 Map(setLocation = {coordinates ->
                     userLocation = coordinates
                 })
             }
             composable("Add Location"){
-                Add(LatLng(23.7276, 90.4106), file)
+                Add(userLocation!!)
             }
             composable("Edit Location"){
-                Edit(file)
+                Edit()
             }
             composable("Get Locations"){
                 Get()

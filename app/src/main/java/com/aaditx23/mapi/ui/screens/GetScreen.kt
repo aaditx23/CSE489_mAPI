@@ -24,6 +24,7 @@ import com.aaditx23.mapi.backend.LocationVM
 fun Get(){
     val locationvm: LocationVM = viewModel()
     val allLocation = locationvm.allLocations.value
+    println("SIZE: ${allLocation.size}")
 
 
     LazyColumn(

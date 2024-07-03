@@ -29,17 +29,13 @@ import java.io.File
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun Add(coordinates: LatLng, file: File){
+fun Add(coordinates: LatLng){
     val location: LocationVM = viewModel()
     val response by location.locationResponse.collectAsState()
     var selectedImage by remember {
         mutableStateOf<File?>(null)
     }
     val context = LocalContext.current
-    file.createNewFile()
-    file.outputStream().use {
-        context.assets.open("im.jpg").copyTo(it)
-    }
     var showToast by remember { mutableStateOf(false) }
     var showImagePicker by remember { mutableStateOf(false) }
     var enableImageSelect by remember { mutableStateOf(true) }
@@ -120,14 +116,10 @@ fun Add(coordinates: LatLng, file: File){
 }
 
 @Composable
-fun Edit(file : File){
+fun Edit(){
     val locationvm: LocationVM = viewModel()
     val response by locationvm.locationResponse.collectAsState()
     val context = LocalContext.current
-    file.createNewFile()
-    file.outputStream().use {
-        context.assets.open("im.jpg").copyTo(it)
-    }
     var showToast by remember { mutableStateOf(false) }
     var enableField by remember { mutableStateOf(false) }
     var editObject by remember { mutableStateOf<Location?>(null) }

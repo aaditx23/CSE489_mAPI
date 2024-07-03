@@ -25,9 +25,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             MAPITheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) {  innerPadding ->
-                    Main(
-                        file = File(cacheDir, "im.jpg")
-                    )
+                    Main()
                 }
             }
         }
