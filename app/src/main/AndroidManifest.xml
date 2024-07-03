@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
 
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
@@ -30,9 +32,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.canhub.cropper.CropImageActivity"
+            android:theme="@style/Theme.AppCompat.DayNight"/>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCGvcDAntdK5mRTEZHoTDclfhpWU3xGaio"
+            android:value="$MAPS_API"
             />
     </application>
 

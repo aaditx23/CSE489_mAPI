@@ -49,6 +49,8 @@ android {
     }
 }
 
+
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -79,9 +81,11 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("io.coil-kt:coil-compose:2.6.0")
 
-//    implementation("org.osmdroid:osmdroid-android:6.1.16")
-////    implementation("tech.utsmankece:osm-androd-compose:0.0.3")
+
     implementation("com.google.maps.android:maps-compose:5.0.4")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+
+    implementation("com.github.CanHub:Android-Image-Cropper:4.0.0")
 
 
 

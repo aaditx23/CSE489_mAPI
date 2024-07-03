@@ -61,13 +61,13 @@ class LocationVM: ViewModel() {
     }
 
 
-    private fun findLocation(id: Int): Location{
-        println("${ _allLocations.value.size } PRINTED")
-        if (id < _allLocations.value.size) {
+     fun findLocation(id: Int): Location?{
+
+        if (id < _allLocations.value.size && id >0) {
             print("FOund")
             return _allLocations.value[id - 1]
         }
-        return Location()
+        return null
     }
 
     fun createLocation(location: Location, image: File){
@@ -125,23 +125,19 @@ class LocationVM: ViewModel() {
         })
     }
 
-    fun updateLocation(location: Location, image: File){
+    fun updateLocation(location: Location){
         val oldLocation = findLocation(id = location.id!!)
 
-        val titlePart = (location.title ?: oldLocation.title)!!.toRequestBody("text/plain".toMediaTypeOrNull())
-        val latPart = (location.lat?: oldLocation.lat).toString().toRequestBody("text/plain".toMediaTypeOrNull())
-        val lonPart = (location.lon?: oldLocation.lat).toString().toRequestBody("text/plain".toMediaTypeOrNull())
+//        val titlePart = (location.title ?: oldLocation.title)!!.toRequestBody("text/plain".toMediaTypeOrNull())
+//        val latPart = (location.lat?: oldLocation.lat).toString().toRequestBody("text/plain".toMediaTypeOrNull())
+//        val lonPart = (location.lon?: oldLocation.lat).toString().toRequestBody("text/plain".toMediaTypeOrNull())
+
+//        println("${location.id}\n$titlePart\n$latPart\n$lonPart")
         val response = api.updateLocation(
             id = location.id,
-            title = titlePart,
-            lat = latPart,
-            lon = lonPart,
-            image = MultipartBody.Part
-                .createFormData(
-                    "image",
-                    image.name,
-                    image.asRequestBody()
-                )
+            title = (location.title ?: oldLocation!!.title).toString(),
+            lat = (location.lat?: oldLocation!!.lat),
+            lon = (location.lon?: oldLocation!!.lat)
         )
         response.enqueue(object : Callback<Location>{
             override fun onResponse(call: Call<Location>, response: Response<Location>) {

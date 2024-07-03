@@ -35,7 +35,12 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.aaditx23.mapi.backend.Location
+import com.aaditx23.mapi.backend.LocationService
 import com.aaditx23.mapi.backend.LocationVM
+import com.aaditx23.mapi.components.permissionLauncher
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -44,37 +49,18 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 
 
-@SuppressLint("UnrememberedMutableState")
+@SuppressLint("UnrememberedMutableState", "MissingPermission")
 @Composable
-fun Map(){
+fun Map(setLocation: (coordinates: LatLng) -> Unit){
 
-    var hasLocationPermission by remember { mutableStateOf(false) }
+
     val locationvm : LocationVM = viewModel()
     val context = LocalContext.current
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        hasLocationPermission = isGranted
-    }
 
-    LaunchedEffect(Unit) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                // Fine location permission granted
-                hasLocationPermission = true
-            } else {
-                // Request location permission
-                permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-            }
-        } else {
-            // For versions below M, assume permission is granted
-            hasLocationPermission = true
-        }
-    }
+    var hasLocationPermission by remember { mutableStateOf(false) }
+    hasLocationPermission = permissionLauncher(context = context, permission = Manifest.permission.ACCESS_FINE_LOCATION )
+
+
 
     val cameraPositonState = rememberCameraPositionState{
         position = CameraPosition.fromLatLngZoom(LatLng(23.6850, 90.3563), 12f)
@@ -84,6 +70,22 @@ fun Map(){
     }
     var markerLocation by remember{
         mutableStateOf<Location?>(null)
+    }
+    var userLocation by remember{
+        mutableStateOf<LatLng?>(null)
+    }
+
+    LaunchedEffect(hasLocationPermission) {
+        if (hasLocationPermission){
+            val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+            fusedLocationClient.lastLocation.addOnSuccessListener {location ->
+                if (location != null){
+                    userLocation = LatLng(location.latitude, location.longitude)
+                    setLocation(userLocation!!)
+                    cameraPositonState.position = CameraPosition.fromLatLngZoom(userLocation!!, 15f)
+                }
+            }
+        }
     }
 
 
@@ -95,16 +97,24 @@ fun Map(){
         ){
             locationvm.allLocations.value.forEachIndexed { _, location ->
                 val markerState = rememberMarkerState(
-                    position = LatLng(location.lat!!, location.lon!!)
+                     position = LatLng(location.lat!!, location.lon!!)
                 )
                 Marker(
                     state = markerState,
                     title = location.title,
+                    icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET),
                     onClick = {
                         showDialog = true
                         markerLocation = location
                         true
                     }
+                )
+            }
+            userLocation?.let{
+                val userMarkerState = rememberMarkerState(position = it)
+                Marker(
+                    state = userMarkerState,
+                    title = "CURRENT LOCATION"
                 )
             }
             

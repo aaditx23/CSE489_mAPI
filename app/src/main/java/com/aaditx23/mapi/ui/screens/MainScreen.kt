@@ -8,6 +8,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -20,6 +22,7 @@ import com.aaditx23.mapi.backend.LocationVM
 import com.aaditx23.mapi.components.BottomNavigation
 import com.aaditx23.mapi.models.BottomNavItem
 import com.aaditx23.mapi.models.BottomNavItem.Companion.bottomNavItemList
+import com.google.android.gms.maps.model.LatLng
 import org.json.JSONObject
 import java.io.File
 
@@ -31,9 +34,12 @@ fun Main(file: File) {
     val location = LocationVM()
     val bottomNav = bottomNavItemList
     var selectedIndex by rememberSaveable {
-        mutableIntStateOf(1)
+        mutableIntStateOf(0)
     }
     val navController = rememberNavController()
+    var userLocation by remember{
+        mutableStateOf<LatLng?>(LatLng(23.7276, 90.4106))
+    }
 
 
     Scaffold(
@@ -47,10 +53,12 @@ fun Main(file: File) {
 
         NavHost(navController = navController, startDestination = "Add Location"){
             composable("Map"){
-                Map()
+                Map(setLocation = {coordinates ->
+                    userLocation = coordinates
+                })
             }
             composable("Add Location"){
-                Add(file)
+                Add(LatLng(23.7276, 90.4106), file)
             }
             composable("Edit Location"){
                 Edit(file)
